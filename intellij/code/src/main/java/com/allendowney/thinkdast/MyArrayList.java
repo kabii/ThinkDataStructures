@@ -44,15 +44,19 @@ public class MyArrayList<T> implements List<T> {
 
 	@Override
 	public boolean add(T element) {
-		// TODO: FILL THIS IN!
-		return false;
+		if (size >= array.length) {
+			T[] bigger = (T[]) new Object[size * 2];
+			System.arraycopy(array, 0, bigger, 0, array.length);
+			array = bigger;
+		}
+		array[size++] = element;
+		return true;
+
 	}
 
 	@Override
 	public void add(int index, T element) {
-		if (index < 0 || index > size) {
-			throw new IndexOutOfBoundsException();
-		}
+		checkIndexForAdd(index);
 		// add the element to get the resizing
 		add(element);
 
@@ -102,15 +106,17 @@ public class MyArrayList<T> implements List<T> {
 
 	@Override
 	public T get(int index) {
-		if (index < 0 || index >= size) {
-			throw new IndexOutOfBoundsException();
-		}
+		checkIndex(index);
 		return array[index];
 	}
 
 	@Override
 	public int indexOf(Object target) {
-		// TODO: FILL THIS IN!
+		for (int i = 0; i < size; i++) {
+			if (equals(target, array[i])) {
+				return i;
+			}
+		}
 		return -1;
 	}
 
@@ -119,7 +125,7 @@ public class MyArrayList<T> implements List<T> {
 	 * Handles the special case that the target is null.
 	 *
 	 * @param target
-	 * @param object
+	 * @param element
 	 */
 	private boolean equals(Object target, Object element) {
 		if (target == null) {
@@ -181,8 +187,14 @@ public class MyArrayList<T> implements List<T> {
 
 	@Override
 	public T remove(int index) {
-		// TODO: FILL THIS IN!
-		return null;
+		checkIndex(index);
+		T oldValue = array[index];
+		int movedCount = size - 1 - index;
+		if (movedCount > 0) {
+			System.arraycopy(array, index + 1, array, index, movedCount);
+		}
+		size--;
+		return oldValue;
 	}
 
 	@Override
@@ -201,8 +213,10 @@ public class MyArrayList<T> implements List<T> {
 
 	@Override
 	public T set(int index, T element) {
-		// TODO: FILL THIS IN!
-		return null;
+		checkIndex(index);
+		T oldValue = array[index];
+		array[index] = element;
+		return oldValue;
 	}
 
 	@Override
@@ -227,5 +241,17 @@ public class MyArrayList<T> implements List<T> {
 	@Override
 	public <U> U[] toArray(U[] array) {
 		throw new UnsupportedOperationException();
+	}
+
+	private void checkIndex(int index) {
+		if (index < 0 || index >= size) {
+			throw new IndexOutOfBoundsException();
+		}
+	}
+
+	private void checkIndexForAdd(int index) {
+		if (index < 0 || index > size) {
+			throw new IndexOutOfBoundsException();
+		}
 	}
 }
